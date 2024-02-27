@@ -76,6 +76,24 @@ function martingala(){
 #          echo -e "${yellowColour}[+]${endColour} ${grayColour}Ahora mismo tienes ${endColour}${greenColour}$money€${endColour}"
           jugadas_malas+="$random_number "
         fi
+      else
+        #Cuando apostamos por impar
+        if [ "$(($random_number % 2))" -eq 0 ]; then
+            initial_bet=$(($initial_bet*2))
+            jugadas_malas+="$random_number "
+         else
+  #            echo -e "${greenColour}El número es par, ¡ganas!${endColour}"
+            reward=$(($initial_bet*2))
+  #            echo -e "${yellowColour}[+]${endColour} ${grayColour}Ganas un total de ${endColour}${greenColour}$reward€${endColour}"
+            money=$(($money+$reward))
+  #            echo -e "${yellowColour}[+]${endColour} ${grayColour}Tienes ${endColour}${greenColour}$money€${endColour}"
+            initial_bet=$backup_bet
+            jugadas_malas=""
+
+            if [ "$money" -gt "$maximo_dinero" ]; then
+              maximo_dinero="$money"
+            fi
+          fi       
       fi
     else
       echo -e "\n${redColour}[!] Te has quedado sin dinero, la banca siempre gana${endColour}"
