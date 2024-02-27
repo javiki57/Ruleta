@@ -37,7 +37,7 @@ function martingala(){
   echo -e "\n${yellowColour}[+]${endColour} ${grayColour}Vamos a jugar con una cantidad de${endColour} ${greenColour}$initial_bet${endColour} a ${purpleColour}$par_impar${endColour}"
   backup_bet=$initial_bet
   play_counter=1
-  jugadas_malas="[ "
+  jugadas_malas=""
   maximo_dinero=0
   tput civis #Ocultar el cursor
 
@@ -47,7 +47,7 @@ function martingala(){
 #    echo -e "\n${yellowColour}[+]${endColour} Acabas de apostar ${blueColour}$initial_bet${endColour} y tienes ${greenColour}$money€${endColour}"
 #    echo -e "Ha salido el número $random_number"
 
-    if [ ! "$money" -le 0 ]; then
+    if [ ! "$money" -lt 0 ]; then
      if [ "$par_impar" == "par" ]; then
         if [ "$(($random_number % 2))" -eq 0 ]; then
           if [ $random_number -eq 0 ]; then
@@ -97,10 +97,10 @@ function martingala(){
       fi
     else
       echo -e "\n${redColour}[!] Te has quedado sin dinero, la banca siempre gana${endColour}"
-      echo -e "${yellowColour}[+]${endColour} ${grayColour}Han habido un total de${endColour} ${yellowColour}$play_counter${endColour} jugadas"
+      echo -e "${yellowColour}[+]${endColour} ${grayColour}Han habido un total de${endColour} ${yellowColour}$(($play_counter-1))${endColour} jugadas"
       echo -e "${yellowColour}[+]${endColour} ${grayColour}El máximo dinero que has logrado tener ha sido${endColour} ${greenColour}$maximo_dinero€${endColour}"
       echo -e "${yellowColour}[+]${endColour} ${grayColour}A continuación se van a representar las jugadas malas que han salido:${endColour}"
-      echo -e "${blueColour}   $jugadas_malas${endColour}"
+      echo -e "${blueColour}   [ $jugadas_malas]${endColour}"
       tput cnorm; exit 0
     fi
     let play_counter+=1
