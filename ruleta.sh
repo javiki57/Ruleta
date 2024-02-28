@@ -117,12 +117,16 @@ function inverseLabrouchere(){
   
   bet=$((${mySequence[0]} + ${mySequence[-1]}))
   jugadas_totales=0
+  bet_to_renew=$(($money+($money*1/2)))  #Cuando alcancemos este dinero, se renueva la secuencia a 1 2 3 4
+
+  echo -e "${yellowColour}[+]${endColour} ${grayColour}El tope para renovar al secuencia está establecido en ${endColour}${greenColour}$bet_to_renew€${endColour}"
 
   tput civis
   while true; do
     let jugadas_totales+=1
     random_number=$(($RANDOM % 37))
     money=$(($money-$bet))
+
     if [ ! "$money" -lt 0 ]; then
       echo -e "${yellowColour}[+]${endColour} ${grayColour}Invertimos ${greenColour}$bet€${endColour}"
       echo -e "${yellowColour}[+]${endColour} ${grayColour}Tenemos${endColour} ${greenColour}$money€${endColour}"
@@ -136,18 +140,46 @@ function inverseLabrouchere(){
           let money+=$reward
           echo -e "${yellowColour}[+]${endColour} ${grayColour}Tienes ${endColour}${greenColour}$money€${endColour}"
 
-          mySequence+=($bet)
-          mySequence=(${mySequence[@]}) #Por si acaso, aunque no debería de ser necesario
-          echo -e "${yellowColour}[+]${endColour} ${grayColour}Nuestra nueva secuencia es ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
 
-          if [ "${#mySequence[@]}" -ne 1 ] && [ "${#mySequence[@]}" -ne 0 ]; then
-            bet=$((${mySequence[0]} + ${mySequence[-1]}))
-          elif [ "${#mySequence[@]}" -eq 1 ]; then
-            bet=${mySequence[0]}
-          else #No debería de entrar en esta parte, ya que estamos añadiendo
-            echo -e "${redColour}[!] Hemos perdido la secuencia${endColour}"
+          if [ $money -gt $bet_to_renew ];then
+            echo -e "${greenColour}[+] Se ha superado el tope de $bet_to_renew€ establecido${endColour}"
+            bet_to_renew=$(($bet_to_renew + ($bet_to_renew*1/2)))
+            echo -e "${yellowColour}[+]${endColour} ${grayColour}El nuevo tope se ha establecido en${endColour} ${greenColour}$bet_to_renew€${endColour}"
             mySequence=(1 2 3 4)
-            echo -e "${yellowColour}[+]${endColour}${grayColour} Reestablecemos la secuencia a ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+            bet=$((${mySequence[0]} + ${mySequence[-1]}))
+            echo -e "${yellowColour}[+] ${endColour}${grayColour}La secuencia se ha reestablecido a ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+            
+          elif [ $money -lt $(($bet_to_renew - ($bet_to_renew*1/2))) ]; then
+            bet_to_renew=$(($bet_to_renew - ($bet_to_renew*1/2))) 
+            echo -e "${yellowColour}[+]${endColour} ${grayColour}Hemos llegado a un mínimo crítico, reajustamos el tope a${endColour} ${redColour}$bet_to_renew€${endColour}"
+            
+            mySequence+=($bet)
+            mySequence=(${mySequence[@]}) #Por si acaso, aunque no debería de ser necesario
+            echo -e "${yellowColour}[+]${endColour} ${grayColour}Nuestra nueva secuencia es ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+
+            if [ "${#mySequence[@]}" -ne 1 ] && [ "${#mySequence[@]}" -ne 0 ]; then
+              bet=$((${mySequence[0]} + ${mySequence[-1]}))
+            elif [ "${#mySequence[@]}" -eq 1 ]; then
+              bet=${mySequence[0]}
+            else #No debería de entrar en esta parte, ya que estamos añadiendo
+              echo -e "${redColour}[!] Hemos perdido la secuencia${endColour}"
+              mySequence=(1 2 3 4)
+              echo -e "${yellowColour}[+]${endColour}${grayColour} Reestablecemos la secuencia a ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+            fi           
+          else
+            mySequence+=($bet)
+            mySequence=(${mySequence[@]}) #Por si acaso, aunque no debería de ser necesario
+            echo -e "${yellowColour}[+]${endColour} ${grayColour}Nuestra nueva secuencia es ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+
+            if [ "${#mySequence[@]}" -ne 1 ] && [ "${#mySequence[@]}" -ne 0 ]; then
+              bet=$((${mySequence[0]} + ${mySequence[-1]}))
+            elif [ "${#mySequence[@]}" -eq 1 ]; then
+              bet=${mySequence[0]}
+            else #No debería de entrar en esta parte, ya que estamos añadiendo
+              echo -e "${redColour}[!] Hemos perdido la secuencia${endColour}"
+              mySequence=(1 2 3 4)
+              echo -e "${yellowColour}[+]${endColour}${grayColour} Reestablecemos la secuencia a ${endColour}${blueColour}[${mySequence[@]}]${endColour}"
+            fi
           fi
 
   #      elif [ "$random_number" -eq 0 ]; then
